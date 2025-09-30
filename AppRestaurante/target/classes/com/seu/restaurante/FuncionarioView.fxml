@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.seu.restaurante.FuncionarioViewController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <children>
+        <Label text="Gestão de Funcionários">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <TableView fx:id="tabelaFuncionarios" prefHeight="200.0">
+            <columns>
+                <TableColumn fx:id="colunaId" prefWidth="50.0" text="ID" />
+                <TableColumn fx:id="colunaNome" prefWidth="150.0" text="Nome" />
+                <TableColumn fx:id="colunaLogin" prefWidth="120.0" text="Login" />
+                <TableColumn fx:id="colunaCargo" prefWidth="100.0" text="Cargo" />
+            </columns>
+        </TableView>
+        <HBox spacing="10.0" alignment="CENTER">
+            <children>
+                <Button fx:id="botaoRemover" onAction="#removerFuncionarioSelecionado" styleClass="button-perigo" text="Remover Selecionado" />
+                <Button fx:id="botaoLimpar" onAction="#limparCampos" text="Limpar / Novo" />
+            </children>
+        </HBox>
+        <VBox spacing="5.0" style="-fx-border-color: lightgray; -fx-padding: 10px; -fx-border-radius: 5px;">
+            <children>
+                <Label text="Adicionar / Editar Funcionário:">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="campoNome" promptText="Nome completo" />
+                        <TextField fx:id="campoCargo" promptText="Cargo (ex: Garcom)" />
+                    </children>
+                </HBox>
+                <HBox spacing="10.0" alignment="CENTER">
+                    <children>
+                        <TextField fx:id="campoLogin" promptText="Login de acesso" />
+                        <PasswordField fx:id="campoSenha" promptText="Senha" />
+                    </children>
+                </HBox>
+                <Button fx:id="botaoSalvar" onAction="#salvarFuncionario" text="Salvar" />
+            </children>
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+        </VBox>
+    </children>
+</VBox>

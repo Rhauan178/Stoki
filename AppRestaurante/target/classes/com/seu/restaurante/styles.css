@@ -1,0 +1,33 @@
+.botao-livre {
+    -fx-base: #28a745; /* Verde */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.botao-ocupada {
+    -fx-base: #dc3545; /* Vermelho */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.botao-reservada {
+    -fx-base: #17a2b8; /* Azul */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button .glyph-icon {
+    -glyph-size: 1.004166666666666540841379em; /* Aumenta o ícone para 130% do tamanho do texto */
+}
+
+/* Cria um novo estilo para botões de ação perigosa (ex: remover) */
+.button-perigo {
+    -fx-base: #dc3545; /* Vermelho que já usamos */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Define que ícones dentro de botões de perigo também sejam brancos */
+.button-perigo .glyph-icon {
+    -fx-fill: white;
+}

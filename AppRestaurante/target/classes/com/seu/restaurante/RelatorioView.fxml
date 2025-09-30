@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.seu.restaurante.RelatorioViewController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <children>
+        <Label text="Relatório de Vendas">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <TableView fx:id="tabelaPedidosPagos" prefHeight="300.0">
+            <columns>
+                <TableColumn fx:id="colunaPedidoId" prefWidth="75.0" text="ID Pedido" />
+                <TableColumn fx:id="colunaMesaId" prefWidth="75.0" text="Nº Mesa" />
+                <TableColumn fx:id="colunaValorTotal" prefWidth="120.0" text="Valor Total (R$)" />
+                <TableColumn fx:id="colunaDataHora" prefWidth="200.0" text="Data e Hora" />
+            </columns>
+        </TableView>
+        <VBox alignment="CENTER_RIGHT" spacing="5.0">
+            <children>
+                <Label fx:id="labelTotalPedidos" text="Total de Pedidos Pagos: 0">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <Label fx:id="labelFaturamentoTotal" text="Faturamento Total: R$ 0,00">
+                    <font>
+                        <Font name="System Bold" size="16.0" />
+                    </font>
+                </Label>
+            </children>
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+        </VBox>
+    </children>
+</VBox>
