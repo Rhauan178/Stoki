@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.seu.restaurante.EstoqueViewController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <children>
+        <Label text="Gestão de Estoque">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <TableView fx:id="tabelaIngredientes" prefHeight="250.0">
+            <columns>
+                <TableColumn fx:id="colunaId" prefWidth="50.0" text="ID" />
+                <TableColumn fx:id="colunaNome" prefWidth="150.0" text="Nome" />
+                <TableColumn fx:id="colunaEstoqueAtual" prefWidth="100.0" text="Qtd. Atual" />
+                <TableColumn fx:id="colunaUnidade" prefWidth="100.0" text="Unidade" />
+                <TableColumn fx:id="colunaEstoqueMinimo" prefWidth="100.0" text="Qtd. Mínima" />
+            </columns>
+        </TableView>
+        <HBox alignment="CENTER" spacing="10.0">
+            <children>
+                <Button fx:id="botaoRemover" onAction="#removerIngredienteSelecionado" styleClass="button-perigo" text="Remover Selecionado" />
+                <Button fx:id="botaoLimpar" onAction="#limparCampos" text="Limpar / Novo" />
+            </children>
+        </HBox>
+        <VBox styleClass="painel-sombreado" spacing="5.0" style="-fx-background-color: -fx-base-light; -fx-background-radius: 5px; -fx-padding: 10px;">
+            <children>
+                <Label text="Adicionar / Editar Ingrediente:">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="campoNome" promptText="Nome do Ingrediente" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="campoUnidade" prefWidth="120.0" promptText="Unidade (kg, L, un)" />
+                    </children>
+                </HBox>
+                <HBox spacing="10.0">
+                    <children>
+                        <TextField fx:id="campoEstoqueAtual" promptText="Qtd. Atual (ex: 10.5)" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="campoEstoqueMinimo" promptText="Qtd. Mínima (ex: 2.0)" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+                <Button fx:id="botaoSalvar" onAction="#salvarIngrediente" text="Salvar" maxWidth="Infinity" />
+            </children>
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+        </VBox>
+    </children>
+</VBox>

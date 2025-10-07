@@ -1,0 +1,56 @@
+.botao-livre {
+    -fx-base: #28a745; /* Verde */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.botao-ocupada {
+    -fx-base: #dc3545; /* Vermelho */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.botao-reservada {
+    -fx-base: #17a2b8; /* Azul */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button .glyph-icon {
+    -glyph-size: 14px;
+}
+
+.button-perigo {
+    -fx-base: #dc3545; /* Vermelho que já usamos */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Define que ícones dentro de botões de perigo também sejam brancos */
+.button-perigo .glyph-icon {
+    -fx-fill: white;
+}
+
+.button, .table-row-cell:filled {
+    -fx-cursor: hand;
+}
+
+.button {
+    /* Adiciona uma animação de 0.2 segundos à mudança da cor de fundo */
+    -fx-transition: -fx-background-color 0.2s ease-in-out;
+}
+
+.painel-sombreado {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0.2, 0, 2);
+}
+
+.mesa-selecionada {
+    -fx-border-color: -fx-accent;
+    -fx-border-width: 3;
+    -fx-border-radius: 5;
+}
+
+.botao-lateral {
+    -fx-font-size: 20px;
+    -fx-padding: 15px;
+}
