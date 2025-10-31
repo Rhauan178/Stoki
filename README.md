@@ -1,71 +1,134 @@
-# Stoki
-Startup voltada para auxílio no gerenciamento de mesas e ingredientes de restaurantes e bares.
+<p align="center">
+  <img src=".github/assets/logo-stoki.png" alt="Logo da Stoki" width="200"/>
+</p>
+
+<h1 align="center">
+  Stoki - Gestão Inteligente para Restaurantes
+</h1>
+
+<p align="center">
+  O sistema completo para otimizar o gerenciamento de mesas, pedidos e ingredientes de restaurantes e bares.
+  <br />
+  <br />
+  <img alt="Status do Build" src="https://img.shields.io/github/actions/workflow/status/seu-usuario/seu-repo/main.yml?branch=main&style=for-the-badge">
+  <img alt="Licença" src="https://img.shields.io/github/license/seu-usuario/seu-repo?style=for-the-badge">
+  <img alt="Versão"img src="https://img.shields.io/github/v/release/seu-usuario/seu-repo?style=for-the-badge">
+</p>
+
+---
+
+## 📋 Índice
+
+* [Sobre o Projeto](#-sobre-o-projeto)
+* [✨ Funcionalidades](#-funcionalidades)
+* [📸 Screenshots](#-screenshots)
+* [🚀 Tecnologias Usadas](#-tecnologias-usadas)
+* [⭐ Pilares de Qualidade](#-pilares-de-qualidade)
+* [🗃️ Modelo de Dados](#️-modelo-de-dados)
+* [🏁 Começando](#-começando)
+* [🤝 Como Contribuir](#-como-contribuir)
+
+---
+
+## 🧐 Sobre o Projeto
+
+Este projeto modela e desenvolve um sistema de gerenciamento completo para restaurantes e bares. A solução foca em otimizar a operação, integrando o atendimento ao cliente diretamente na mesa com um controle de estoque inteligente.
+
+> **O Problema:** Erros operacionais, falta de comunicação entre salão e cozinha, e dificuldade em gerenciar o estoque de ingredientes em tempo real.
+>
+> **A Solução:** Um sistema centralizado que digitaliza o cardápio, automatiza pedidos, dá baixa em insumos e fornece uma visão clara da operação para os gestores.
+
+## ✨ Funcionalidades
+
+Nosso sistema é dividido em módulos que resolvem problemas específicos do seu negócio:
+
+* 📱 **Cardápio Digital (RF01):** Clientes acessam o cardápio via QR Code, fazem pedidos pelo smartphone e os enviam direto para a cozinha.
+* 📦 **Gestão de Estoque (RF02):** Cadastro de ingredientes, associação aos pratos (ficha técnica) e baixa automática de insumos a cada pedido.
+* 🔔 **Alertas de Estoque:** Emissão de alertas automáticos quando um ingrediente atinge o estoque mínimo.
+* 🖥️ **Painel Operacional (RF03):** Telas otimizadas para a cozinha (status de pedidos) e garçons (status das mesas e notificações).
+* 🗺️ **Gerenciamento do Salão (RF04):** Controle visual do status das mesas (livre, ocupada, reservada) para facilitar o fluxo de clientes.
+* 📊 **Módulo Administrativo (RF05):** Ferramentas para gerentes cadastrarem/alterarem itens, gerenciarem contas de funcionários e acessarem relatórios de vendas.
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src=".github/assets/demo.gif" alt="Demonstração da Aplicação Stoki" width="80%">
+</p>
+
+| Tela de Pedidos (Cliente) | Dashboard (Gerente) |
+| :---: | :---: |
+| ![Tela de Pedidos](.github/assets/screen-pedidos.png) | ![Dashboard](.github/assets/screen-dashboard.png) |
 
 
-Este projeto tem como objetivo modelar e desenvolver um sistema de gerenciamento completo para restaurantes, bares e estabelecimentos similares. A solução é focada em otimizar a operação, integrando o atendimento ao cliente diretamente nas mesas com um controle de estoque inteligente e ferramentas de gestão para a equipe. A estrutura do sistema busca garantir eficiência, reduzir erros operacionais e melhorar a experiência do cliente.
+## 🚀 Tecnologias Usadas
 
-Requisitos Funcionais (Funcionalidades)
-Descrevem as ações e funcionalidades que o sistema deve ser capaz de executar.
+O Stoki é construído com tecnologias modernas, escaláveis e robustas:
 
-RF01 - Cardápio Digital e Pedidos na Mesa: Permite que clientes acessem o cardápio via QR Code, visualizem detalhes dos pratos e façam seus pedidos diretamente do smartphone, enviando-os para a cozinha em tempo real.
+| Componente | Tecnologia |
+| :--- | :--- |
+| **Backend** | ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white) ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white) |
+| **Frontend** | ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB) ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) |
+| **Banco de Dados** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white) |
 
-RF02 - Gestão de Estoque Inteligente: Permite o cadastro de ingredientes, sua associação aos itens do cardápio (ficha técnica), a baixa automática de insumos a cada pedido e a emissão de alertas de estoque baixo.
+## ⭐ Pilares de Qualidade
 
-RF03 - Painel Operacional para a Equipe: Fornece telas otimizadas para a cozinha visualizar e gerenciar o status dos pedidos, e para os garçons acompanharem o status das mesas, receberem notificações e auxiliarem os clientes.
+Mais do que funcionalidades, garantimos uma base sólida (Requisitos Não Funcionais):
 
-RF04 - Gerenciamento do Salão: Permite o controle do status das mesas (livre, ocupada, reservada), facilitando a organização do fluxo de clientes.
+* usability: **Usabilidade (RNF01):** Interface intuitiva para clientes (sem necessidade de aprendizado) e ágil para a equipe.
+* ⚡ **Desempenho (RNF02):** Respostas rápidas, com carregamento de cardápio e envio de pedidos em menos de 2 segundos.
+* 🔒 **Segurança (RNF03):** Acesso protegido por autenticação e autorização baseada em cargos.
+* 📈 **Disponibilidade (RNF04):** Alta disponibilidade (99.5% de uptime) para garantir que o sistema funcione durante todo o horário de pico.
+* 🌐 **Compatibilidade (RNF05):** Aplicação do cliente 100% responsiva para os principais navegadores de smartphones.
 
-RF05 - Módulo Administrativo: Disponibiliza ferramentas para gerentes cadastrarem e alterarem itens do cardápio (preços, descrições, disponibilidade), gerenciarem contas de funcionários e acessarem relatórios de vendas.
+## 🗃️ Modelo de Dados
 
-Requisitos Não Funcionais
-Descrevem os critérios de qualidade e as restrições de operação do sistema, ou seja, como o sistema deve se comportar.
+A arquitetura do banco de dados foi projetada para refletir um ambiente dinâmico, com as seguintes entidades principais:
 
-RNF01 - Usabilidade: A interface do cliente deve ser extremamente intuitiva, sem necessidade de aprendizado prévio. As telas da equipe devem ser ágeis e de fácil operação para não atrasar o serviço.
+* `Mesa` (ID_Mesa, Numero, Status, QRCode)
+* `ItemCardapio` (ID_Item, Nome, Descricao, Preco, Categoria, Disponivel)
+* `Ingrediente` (ID_Ingrediente, Nome, Estoque_Atual, Unidade_Medida, Estoque_Minimo)
+* `Pedido` (ID_Pedido, ID_Mesa, Status, Data_Hora)
+* `Usuario` (ID_Usuario, Nome, Login, Senha, Cargo)
 
-RNF02 - Desempenho: O sistema deve ter um tempo de resposta rápido. O carregamento do cardápio e o envio de um pedido não devem levar mais de 2 segundos.
+A entidade `Usuario` é generalizada e pode ser especializada em `Gerente`, `Garcom` e `Cozinheiro`, cada um com permissões distintas.
 
-RNF03 - Segurança: O acesso aos módulos de gestão e operação deve ser protegido por um sistema de autenticação e autorização por cargo.
+## 🏁 Começando
 
-RNF04 - Disponibilidade: O sistema precisa ter alta disponibilidade (ex: 99.5% de uptime), garantindo que esteja funcional durante todo o horário de operação do estabelecimento, especialmente nos horários de pico.
+Para rodar este projeto localmente, siga os passos:
 
-RNF05 - Compatibilidade: A aplicação web voltada para o cliente deve ser responsiva e totalmente compatível com os principais navegadores de smartphones (como Chrome e Safari).
+### Pré-requisitos
 
-Estrutura do Banco de Dados
-Entidades principais:
+* Java 17+
+* Node.js 18+
+* Um SGBD (Ex: PostgreSQL)
 
-Mesa
+### Instalação
 
-Usuario (Funcionário)
+1.  Clone o repositório
+    ```sh
+    git clone [https://github.com/seu-usuario/seu-repo.git](https://github.com/seu-usuario/seu-repo.git)
+    cd seu-repo
+    ```
+2.  Inicie o Backend (na pasta `/backend`)
+    ```sh
+    ./mvnw spring-boot:run
+    ```
+3.  Inicie o Frontend (na pasta `/frontend`)
+    ```sh
+    npm install
+    npm run dev
+    ```
 
-ItemCardapio
+## 🤝 Como Contribuir
 
-Ingrediente
+Contribuições são o que tornam a comunidade open-source um lugar incrível para aprender e criar. Qualquer contribuição que você fizer será **muito bem-vinda**.
 
-Pedido
+1.  Faça um *Fork* do projeto
+2.  Crie uma *Branch* para sua feature (`git checkout -b feature/AmazingFeature`)
+3.  Faça o *Commit* de suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4.  Faça o *Push* para a Branch (`git push origin feature/AmazingFeature`)
+5.  Abra um *Pull Request*
 
-Relacionamentos:
+---
 
-Uma mesa pode ter vários pedidos ao longo do tempo.
-
-Um pedido é composto por um ou vários itens do cardápio.
-
-Um item do cardápio pode utilizar vários ingredientes (ficha técnica).
-
-Um funcionário (garçom) pode ser responsável por atender vários pedidos.
-
-Generalização/Especialização:
-
-A entidade Usuario pode ser generalizada para representar qualquer pessoa que interaja com o sistema. Ela pode ser especializada em Funcionario e Cliente. A entidade Funcionario, por sua vez, pode ser especializada em subtipos como Gerente, Garcom e Cozinheiro, que herdam atributos da entidade genérica e possuem permissões de acesso distintas.
-
-Modelo de Dados
-O modelo de dados foi projetado para refletir os requisitos de um ambiente de restaurante dinâmico. Abaixo estão algumas das principais entidades e seus atributos essenciais:
-
-Mesa: ID_Mesa, Numero, Status (Livre, Ocupada, Reservada), QRCode
-
-ItemCardapio: ID_Item, Nome, Descricao, Preco, Categoria, Disponivel
-
-Pedido: ID_Pedido, ID_Mesa, Status (Aberto, Enviado, Pronto, Pago), Data_Hora
-
-Usuario: ID_Usuario, Nome, Login, Senha, Cargo (Gerente, Garçom, etc.)
-
-Ingrediente: ID_Ingrediente, Nome, Estoque_Atual, Unidade_Medida, Estoque_Minimo
+Distribuído sob a Licença MIT. Veja `LICENSE.txt` para mais informações.
