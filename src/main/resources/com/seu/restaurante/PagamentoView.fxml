@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="20.0" styleClass="painel-sombreado" style="-fx-background-color: -fx-base-light; -fx-padding: 30;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.seu.restaurante.PagamentoViewController">
+    <children>
+        <Label text="Forma de Pagamento">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <Label fx:id="labelTotalAPagar" text="Total a Pagar: R$ 0,00" style="-fx-font-size: 20px;" />
+
+        <HBox fx:id="painelMetodos" alignment="CENTER" spacing="15.0">
+            <children>
+                <Button fx:id="botaoDinheiro" onAction="#pagarComDinheiro" prefHeight="80.0" prefWidth="120.0" text="Dinheiro" />
+                <Button fx:id="botaoCredito" onAction="#pagarComCredito" prefHeight="80.0" prefWidth="120.0" text="Crédito" />
+                <Button fx:id="botaoDebito" onAction="#pagarComDebito" prefHeight="80.0" prefWidth="120.0" text="Débito" />
+                <Button fx:id="botaoPix" onAction="#mostrarPainelPix" prefHeight="80.0" prefWidth="120.0" text="PIX" />
+            </children>
+        </HBox>
+
+        <VBox fx:id="painelPix" alignment="CENTER" spacing="10.0" visible="false" managed="false">
+            <children>
+                <Label text="Aponte a câmara para o QR Code" />
+                <ImageView fx:id="imageViewQrCode" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                <Label text="Ou copie a chave:" />
+                <TextField fx:id="campoPixCopiaECola" editable="false" promptText="Chave PIX Copia e Cola" />
+                <Button fx:id="botaoConfirmarPagamento" onAction="#pagamentoPixConfirmado" text="Confirmar Pagamento Recebido" maxWidth="Infinity" style="-fx-base: #28a745;" />
+            </children>
+        </VBox>
+
+        <Button fx:id="botaoCancelar" onAction="#cancelarPagamento" text="Cancelar" maxWidth="Infinity" styleClass="button-perigo" />
+    </children>
+</VBox>
