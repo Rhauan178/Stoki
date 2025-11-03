@@ -1,18 +1,18 @@
 <p align="center">
-  <img src=".github/assets/logo-stoki.png" alt="Logo da Stoki" width="200"/>
+  <img src=".github/assets/logo-stoki.png" alt="Logo da Stoki" width="200"/>
 </p>
 
 <h1 align="center">
-  Stoki - Gestão Inteligente para Restaurantes
+  Stoki - Gestão Inteligente para Restaurantes
 </h1>
 
 <p align="center">
-  O sistema completo para otimizar o gerenciamento de mesas, pedidos e ingredientes de restaurantes e bares.
-  <br />
-  <br />
-  <img alt="Status do Build" src="https://img.shields.io/github/actions/workflow/status/seu-usuario/seu-repo/main.yml?branch=main&style=for-the-badge">
-  <img alt="Licença" src="https://img.shields.io/github/license/seu-usuario/seu-repo?style=for-the-badge">
-  <img alt="Versão"img src="https://img.shields.io/github/v/release/seu-usuario/seu-repo?style=for-the-badge">
+  O sistema completo para otimizar o gerenciamento de mesas, pedidos e ingredientes de restaurantes e bares.
+  <br />
+  <br />
+  <img alt="Status do Build" src="https://img.shields.io/github/actions/workflow/status/seu-usuario/seu-repo/main.yml?branch=main&style=for-the-badge">
+  <img alt="Licença" src="https://img.shields.io/github/license/seu-usuario/seu-repo?style=for-the-badge">
+  <img alt="Versão"img src="https://img.shields.io/github/v/release/seu-usuario/seu-repo?style=for-the-badge">
 </p>
 
 ---
@@ -52,7 +52,7 @@ Nosso sistema é dividido em módulos que resolvem problemas específicos do seu
 ## 📸 Screenshots
 
 <p align="center">
-  <img src=".github/assets/demo.gif" alt="Demonstração da Aplicação Stoki" width="80%">
+  <img src=".github/assets/demo.gif" alt="Demonstração da Aplicação Stoki" width="80%">
 </p>
 
 | Tela de Pedidos (Cliente) | Dashboard (Gerente) |
@@ -82,53 +82,61 @@ Mais do que funcionalidades, garantimos uma base sólida (Requisitos Não Funcio
 
 ## 🗃️ Modelo de Dados
 
-A arquitetura do banco de dados foi projetada para refletir um ambiente dinâmico, com as seguintes entidades principais:
+```mermaid
+erDiagram
+    USUARIO {
+        int id_usuario PK
+        string nome
+        string login
+        string senha_hash
+        string cargo
+    }
 
-* `Mesa` (ID_Mesa, Numero, Status, QRCode)
-* `ItemCardapio` (ID_Item, Nome, Descricao, Preco, Categoria, Disponivel)
-* `Ingrediente` (ID_Ingrediente, Nome, Estoque_Atual, Unidade_Medida, Estoque_Minimo)
-* `Pedido` (ID_Pedido, ID_Mesa, Status, Data_Hora)
-* `Usuario` (ID_Usuario, Nome, Login, Senha, Cargo)
+    MESA {
+        int id_mesa PK
+        string numero
+        string status
+        string qrcode_hash
+    }
 
-A entidade `Usuario` é generalizada e pode ser especializada em `Gerente`, `Garcom` e `Cozinheiro`, cada um com permissões distintas.
+    PEDIDO {
+        int id_pedido PK
+        int fk_usuario_garcom FK "Ref. USUARIO(garçom)"
+        int fk_id_mesa FK "Ref. MESA"
+        string status
+        datetime data_hora
+    }
 
-## 🏁 Começando
+    ITEM_CARDAPIO {
+        int id_item_cardapio PK
+        string nome
+        string descricao
+    }
 
-Para rodar este projeto localmente, siga os passos:
+    INGREDIENTE {
+        int id_ingrediente PK
+        string nome
+        float estoque_atual
+        string unidade_medida
+        float estoque_minimo
+    }
 
-### Pré-requisitos
+    PEDIDO_ITEM {
+        int fk_id_pedido FK "Ref. PEDIDO"
+        int fk_id_item_cardapio FK "Ref. ITEM_CARDAPIO"
+        int quantidade
+        string observacao
+    }
 
-* Java 17+
-* Node.js 18+
-* Um SGBD (Ex: PostgreSQL)
+    FICHA_TECNICA {
+        int fk_id_item_cardapio FK "Ref. ITEM_CARDAPIO"
+        int fk_id_ingrediente FK "Ref. INGREDIENTE"
+        float quantidade_usada
+    }
 
-### Instalação
-
-1.  Clone o repositório
-    ```sh
-    git clone [https://github.com/seu-usuario/seu-repo.git](https://github.com/seu-usuario/seu-repo.git)
-    cd seu-repo
-    ```
-2.  Inicie o Backend (na pasta `/backend`)
-    ```sh
-    ./mvnw spring-boot:run
-    ```
-3.  Inicie o Frontend (na pasta `/frontend`)
-    ```sh
-    npm install
-    npm run dev
-    ```
-
-## 🤝 Como Contribuir
-
-Contribuições são o que tornam a comunidade open-source um lugar incrível para aprender e criar. Qualquer contribuição que você fizer será **muito bem-vinda**.
-
-1.  Faça um *Fork* do projeto
-2.  Crie uma *Branch* para sua feature (`git checkout -b feature/AmazingFeature`)
-3.  Faça o *Commit* de suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4.  Faça o *Push* para a Branch (`git push origin feature/AmazingFeature`)
-5.  Abra um *Pull Request*
-
----
-
-Distribuído sob a Licença MIT. Veja `LICENSE.txt` para mais informações.
+    USUARIO ||--|{ PEDIDO : "registra"
+    MESA    ||--|{ PEDIDO : "pertence a"
+    PEDIDO  }|--o{ PEDIDO_ITEM : "contém"
+    ITEM_CARDAPIO }|--o{ PEDIDO_ITEM : "é um"
+    ITEM_CARDAPIO }|--o{ FICHA_TECNICA : "possui"
+    INGREDIENTE   }|--o{ FICHA_TECNICA : "compõe"
