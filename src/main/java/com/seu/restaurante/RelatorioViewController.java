@@ -6,45 +6,36 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.Tooltip;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 public class RelatorioViewController {
 
-    @FXML private TableView<Pedido> tabelaPedidosPagos;
-    @FXML private TableColumn<Pedido, Integer> colunaPedidoId;
-    @FXML private TableColumn<Pedido, Integer> colunaMesaId;
-    @FXML private TableColumn<Pedido, String> colunaFuncionario;
-    @FXML private TableColumn<Pedido, BigDecimal> colunaValorTotal;
-    @FXML private TableColumn<Pedido, LocalDateTime> colunaDataHora;
+    @FXML private TableView<Conta> tabelaContas;
+    @FXML private TableColumn<Conta, Integer> colunaContaId;
+    @FXML private TableColumn<Conta, Integer> colunaMesaId;
+    @FXML private TableColumn<Conta, String> colunaFuncionario;
+    @FXML private TableColumn<Conta, BigDecimal> colunaValorTotal;
+    @FXML private TableColumn<Conta, String> colunaMetodoPagamento;
+    @FXML private TableColumn<Conta, LocalDateTime> colunaDataHora;
+
     @FXML private Label labelTotalPedidos;
     @FXML private Label labelFaturamentoTotal;
     @FXML private Label labelTituloRelatorio;
-    @FXML private Button botaoArquivar;
-    @FXML private Button botaoAlternarVisao;
+
     @FXML private DatePicker datePickerInicio;
     @FXML private DatePicker datePickerFim;
     @FXML private ComboBox<Usuario> comboFuncionario;
-    @FXML private Button botaoFiltrar;
-    @FXML private Button botaoLimparFiltro;
 
-    private final PedidoDAO pedidoDAO = new PedidoDAO();
+    private final ContaDAO contaDAO = new ContaDAO();
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
-    private boolean mostrandoArquivados = false;
 
     @FXML
     public void initialize() {
-        Tooltip.install(botaoFiltrar, new Tooltip("Aplicar os filtros de data e funcionário selecionados"));
-        Tooltip.install(botaoLimparFiltro, new Tooltip("Remover todos os filtros aplicados"));
-        Tooltip.install(botaoArquivar, new Tooltip("Mover os pedidos pagos atuais para o arquivo"));
-        Tooltip.install(botaoAlternarVisao, new Tooltip("Alternar a visualização entre vendas atuais e vendas arquivadas"));
-
         configurarTabela();
         carregarFuncionarios();
         carregarDadosDoRelatorio(null, null, null);
@@ -57,21 +48,21 @@ public class RelatorioViewController {
     }
 
     private void configurarTabela() {
-        colunaPedidoId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colunaContaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colunaMesaId.setCellValueFactory(new PropertyValueFactory<>("idMesa"));
         colunaDataHora.setCellValueFactory(new PropertyValueFactory<>("dataHora"));
-        colunaValorTotal.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getValorTotal()));
-
+        colunaValorTotal.setCellValueFactory(new PropertyValueFactory<>("valorTotal"));
         colunaFuncionario.setCellValueFactory(cellData -> {
-            Pedido pedido = cellData.getValue();
-            Usuario funcionario = usuarioDAO.buscarPorId(pedido.getIdFuncionario());
-            if (funcionario != null) {
-                return new SimpleStringProperty(funcionario.getNome());
-            } else {
-                return new SimpleStringProperty("ID " + pedido.getIdFuncionario() + " (Apagado)");
-            }
+            Usuario f = usuarioDAO.buscarPorId(cellData.getValue().getIdFuncionario());
+            return new SimpleStringProperty(f != null ? f.getNome() : "Desconhecido");
         });
 
+        // Coluna do Método de Pagamento
+        colunaMetodoPagamento.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getMetodoPagamento().toString())
+        );
+
+        // Formatadores (código existente)
         colunaValorTotal.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(BigDecimal item, boolean empty) {
@@ -79,7 +70,6 @@ public class RelatorioViewController {
                 setText(empty || item == null ? null : String.format("R$ %.2f", item));
             }
         });
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         colunaDataHora.setCellFactory(column -> new TableCell<>() {
             @Override
@@ -91,26 +81,15 @@ public class RelatorioViewController {
     }
 
     private void carregarDadosDoRelatorio(LocalDate dataInicio, LocalDate dataFim, Integer funcionarioId) {
-        List<Pedido> pedidos;
-        if (mostrandoArquivados) {
-            labelTituloRelatorio.setText("Relatório de Vendas Arquivadas");
-            pedidos = pedidoDAO.carregarPedidosArquivados(dataInicio, dataFim, funcionarioId);
-            botaoAlternarVisao.setText("Ver Vendas Atuais");
-            botaoArquivar.setVisible(false);
-        } else {
-            labelTituloRelatorio.setText("Relatório de Vendas Atuais");
-            pedidos = pedidoDAO.carregarPedidosPagos(dataInicio, dataFim, funcionarioId);
-            botaoAlternarVisao.setText("Ver Vendas Arquivadas");
-            botaoArquivar.setVisible(true);
-        }
+        List<Conta> contas = contaDAO.carregarContasPagas(dataInicio, dataFim, funcionarioId);
 
-        tabelaPedidosPagos.setItems(FXCollections.observableArrayList(pedidos));
+        tabelaContas.setItems(FXCollections.observableArrayList(contas));
 
-        BigDecimal faturamentoTotal = pedidos.stream()
-                .map(Pedido::getValorTotal)
+        BigDecimal faturamentoTotal = contas.stream()
+                .map(Conta::getValorTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        labelTotalPedidos.setText("Total de Pedidos: " + pedidos.size());
+        labelTotalPedidos.setText("Total de Contas Pagas: " + contas.size());
         labelFaturamentoTotal.setText(String.format("Faturamento Total: R$ %.2f", faturamentoTotal));
     }
 
@@ -125,7 +104,6 @@ public class RelatorioViewController {
             AlertaUtil.mostrarErro("Erro de Data", "A data de início não pode ser posterior à data de fim.");
             return;
         }
-
         carregarDadosDoRelatorio(inicio, fim, funcionarioId);
     }
 
@@ -135,22 +113,6 @@ public class RelatorioViewController {
         datePickerFim.setValue(null);
         comboFuncionario.setValue(null);
         carregarDadosDoRelatorio(null, null, null);
-    }
-
-    @FXML
-    private void arquivarVendas() {
-        boolean confirmado = AlertaUtil.mostrarConfirmacao("Confirmar Arquivamento",
-                "Tem a certeza que quer arquivar todas as vendas atuais exibidas?");
-        if (confirmado) {
-            pedidoDAO.arquivarPedidosPagos();
-            carregarDadosDoRelatorio(null, null, null);
-        }
-    }
-
-    @FXML
-    private void alternarVisao() {
-        mostrandoArquivados = !mostrandoArquivados;
-        limparFiltro();
     }
 
     @FXML

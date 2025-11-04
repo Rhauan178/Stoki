@@ -16,14 +16,25 @@ public class LoginViewController {
     private void processarLogin() {
         String login = campoUsuario.getText().trim();
         String senha = campoSenha.getText().trim();
+
         Usuario usuarioDoBanco = usuarioDAO.buscarPorLogin(login);
 
         if (usuarioDoBanco != null && usuarioDoBanco.getSenha().equals(senha)) {
             System.out.println("Login bem-sucedido para o usuário: " + usuarioDoBanco.getNome());
-            App.setUsuarioLogado(usuarioDoBanco); // Salva o usuário que acabou de logar
+            App.setUsuarioLogado(usuarioDoBanco);
             labelErro.setText("");
-            // Troca para a tela principal
-            App.trocarDeTela("MesaView.fxml", "Controle de Mesas");
+
+            String cargo = usuarioDoBanco.getCargo();
+
+            if ("Gerente".equalsIgnoreCase(cargo) || "Garçom".equalsIgnoreCase(cargo)) {
+                App.trocarDeTela("MesaView.fxml", "Controle de Mesas");
+
+            } else if ("Cozinheiro".equalsIgnoreCase(cargo)) {
+                App.trocarDeTela("CozinhaView.fxml", "Painel da Cozinha");
+
+            } else {
+                AlertaUtil.mostrarErro("Erro de Permissão", "O seu cargo não tem uma tela de acesso definida.");
+            }
         } else {
             labelErro.setText("Usuário ou senha inválidos.");
         }

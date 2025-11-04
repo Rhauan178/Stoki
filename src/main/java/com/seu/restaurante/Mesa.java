@@ -1,5 +1,10 @@
 package com.seu.restaurante;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 enum StatusMesa {
     LIVRE,
     OCUPADA,
@@ -10,12 +15,12 @@ public class Mesa {
 
     private int numero;
     private StatusMesa status;
-    private Pedido pedidoAtual;
+    private List<Pedido> pedidosDaMesa;
 
     public Mesa(int numero, StatusMesa status) {
         this.numero = numero;
         this.status = status;
-        this.pedidoAtual = null;
+        this.pedidosDaMesa = new ArrayList<>();
     }
 
     public int getNumero() {
@@ -30,11 +35,29 @@ public class Mesa {
         this.status = status;
     }
 
-    public Pedido getPedidoAtual() {
-        return pedidoAtual;
+    public void adicionarPedido(Pedido pedido) {
+        this.pedidosDaMesa.add(pedido);
     }
 
-    public void setPedidoAtual(Pedido pedidoAtual) {
-        this.pedidoAtual = pedidoAtual;
+    public List<Pedido> getPedidosDaMesa() {
+        return pedidosDaMesa;
+    }
+
+    public List<Pedido> getPedidosAtivos() {
+        return pedidosDaMesa.stream()
+                .filter(p -> p.getStatus() != StatusPedido.PAGO && p.getStatus() != StatusPedido.ARQUIVADO)
+                .collect(Collectors.toList());
+    }
+
+    public void limparPedidos() {
+        this.pedidosDaMesa.clear();
+    }
+
+    public BigDecimal getValorTotalDaConta() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (Pedido pedido : getPedidosAtivos()) {
+            total = total.add(pedido.getValorTotal());
+        }
+        return total;
     }
 }

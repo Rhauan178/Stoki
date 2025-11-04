@@ -17,8 +17,9 @@ public class PedidoDAO {
                 + " status TEXT NOT NULL,"
                 + " data_hora TEXT NOT NULL,"
                 + " observacao TEXT,"
-                + " metodo_pagamento TEXT,"
-                + " FOREIGN KEY (id_funcionario) REFERENCES usuarios(id)"
+                + " id_conta_paga INT NULL," // Nova coluna para ligar à conta
+                + " FOREIGN KEY (id_funcionario) REFERENCES usuarios(id),"
+                + " FOREIGN KEY (id_conta_paga) REFERENCES contas(id)"
                 + ");";
         String sqlPedidoItens = "CREATE TABLE IF NOT EXISTS pedido_itens ("
                 + " id_pedido INT NOT NULL,"
@@ -37,7 +38,7 @@ public class PedidoDAO {
     }
 
     public void salvarPedido(Pedido pedido) {
-        String sqlPedido = "INSERT INTO pedidos(id_mesa, id_funcionario, status, data_hora, observacao, metodo_pagamento) VALUES(?,?,?,?,?,?)";
+        String sqlPedido = "INSERT INTO pedidos(id_mesa, id_funcionario, status, data_hora, observacao) VALUES(?,?,?,?,?)";
         String sqlItens = "INSERT INTO pedido_itens(id_pedido, id_item_cardapio, quantidade) VALUES(?,?,?)";
         try (Connection conn = DatabaseConnector.connect()) {
             conn.setAutoCommit(false);
@@ -47,7 +48,6 @@ public class PedidoDAO {
                 pstmtPedido.setString(3, pedido.getStatus().name());
                 pstmtPedido.setString(4, pedido.getDataHora().toString());
                 pstmtPedido.setString(5, pedido.getObservacao());
-                pstmtPedido.setString(6, pedido.getMetodoPagamento() != null ? pedido.getMetodoPagamento().name() : null);
                 pstmtPedido.executeUpdate();
                 ResultSet generatedKeys = pstmtPedido.getGeneratedKeys();
                 if (generatedKeys.next()) {
@@ -70,14 +70,29 @@ public class PedidoDAO {
         }
     }
 
-    public void marcarComoPago(int pedidoId, MetodoPagamento metodo) {
-        String sql = "UPDATE pedidos SET status = ?, data_hora = ?, metodo_pagamento = ? WHERE id = ?";
+    public void arquivarPedidos(int contaId, List<Pedido> pedidos) {
+        String sql = "UPDATE pedidos SET status = ?, id_conta_paga = ? WHERE id = ?";
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, StatusPedido.PAGO.name());
-            pstmt.setString(2, LocalDateTime.now().toString());
-            pstmt.setString(3, metodo.name());
-            pstmt.setInt(4, pedidoId);
+
+            for (Pedido pedido : pedidos) {
+                pstmt.setString(1, StatusPedido.ARQUIVADO.name());
+                pstmt.setInt(2, contaId);
+                pstmt.setInt(3, pedido.getId());
+                pstmt.addBatch();
+            }
+            pstmt.executeBatch();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void atualizarStatus(int pedidoId, StatusPedido novoStatus) {
+        String sql = "UPDATE pedidos SET status = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, novoStatus.name());
+            pstmt.setInt(2, pedidoId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -91,6 +106,31 @@ public class PedidoDAO {
             pstmt.setString(1, observacao);
             pstmt.setInt(2, pedidoId);
             pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void atualizarItensDoPedido(Pedido pedido) {
+        if (pedido.getId() == 0) return;
+        String sqlDelete = "DELETE FROM pedido_itens WHERE id_pedido = ?";
+        String sqlInsert = "INSERT INTO pedido_itens(id_pedido, id_item_cardapio, quantidade) VALUES(?,?,?)";
+        try (Connection conn = DatabaseConnector.connect()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement pstmtDelete = conn.prepareStatement(sqlDelete)) {
+                pstmtDelete.setInt(1, pedido.getId());
+                pstmtDelete.executeUpdate();
+            }
+            try (PreparedStatement pstmtInsert = conn.prepareStatement(sqlInsert)) {
+                for (Map.Entry<ItemCardapio, Integer> entry : pedido.getItens().entrySet()) {
+                    pstmtInsert.setInt(1, pedido.getId());
+                    pstmtInsert.setInt(2, entry.getKey().getId());
+                    pstmtInsert.setInt(3, entry.getValue());
+                    pstmtInsert.addBatch();
+                }
+                pstmtInsert.executeBatch();
+            }
+            conn.commit();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -115,33 +155,14 @@ public class PedidoDAO {
         }
     }
 
-    public void arquivarPedidosPagos() {
-        String sql = "UPDATE pedidos SET status = ? WHERE status = ?";
-        try (Connection conn = DatabaseConnector.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, StatusPedido.ARQUIVADO.name());
-            pstmt.setString(2, StatusPedido.PAGO.name());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+    public List<Pedido> carregarPedidosAtivos() {
+        String sql = "SELECT * FROM pedidos WHERE status != 'ARQUIVADO'";
+        return carregarPedidos(sql, null, null, null);
     }
 
-    public List<Pedido> carregarPedidosAtivos() { return carregarPedidosAtivos(null, null, null); }
-    public List<Pedido> carregarPedidosPagos() { return carregarPedidosPagos(null, null, null); }
-    public List<Pedido> carregarPedidosArquivados() { return carregarPedidosArquivados(null, null, null); }
-
-    public List<Pedido> carregarPedidosAtivos(LocalDate dataInicio, LocalDate dataFim, Integer funcionarioId) {
-        String sql = "SELECT * FROM pedidos WHERE status != 'PAGO' AND status != 'ARQUIVADO'";
-        return carregarPedidos(sql, dataInicio, dataFim, funcionarioId);
-    }
-    public List<Pedido> carregarPedidosPagos(LocalDate dataInicio, LocalDate dataFim, Integer funcionarioId) {
-        String sql = "SELECT * FROM pedidos WHERE status = 'PAGO'";
-        return carregarPedidos(sql, dataInicio, dataFim, funcionarioId);
-    }
-    public List<Pedido> carregarPedidosArquivados(LocalDate dataInicio, LocalDate dataFim, Integer funcionarioId) {
-        String sql = "SELECT * FROM pedidos WHERE status = 'ARQUIVADO'";
-        return carregarPedidos(sql, dataInicio, dataFim, funcionarioId);
+    public List<Pedido> carregarPedidosParaCozinha() {
+        String sql = "SELECT * FROM pedidos WHERE status = 'ENVIADO' OR status = 'EM_PREPARO'";
+        return carregarPedidos(sql, null, null, null);
     }
 
     private List<Pedido> carregarPedidos(String baseSql, LocalDate dataInicio, LocalDate dataFim, Integer funcionarioId) {
@@ -173,10 +194,13 @@ public class PedidoDAO {
                 pedido.setStatus(StatusPedido.valueOf(rsPedidos.getString("status")));
                 pedido.setDataHora(LocalDateTime.parse(rsPedidos.getString("data_hora")));
                 pedido.setObservacao(rsPedidos.getString("observacao"));
-                String metodoPagamentoStr = rsPedidos.getString("metodo_pagamento");
-                if (metodoPagamentoStr != null) {
-                    pedido.setMetodoPagamento(MetodoPagamento.valueOf(metodoPagamentoStr));
+
+                // Lê o novo campo id_conta_paga
+                pedido.setIdContaPaga(rsPedidos.getInt("id_conta_paga"));
+                if (rsPedidos.wasNull()) {
+                    pedido.setIdContaPaga(null);
                 }
+
                 try (PreparedStatement pstmtItens = conn.prepareStatement(sqlItens)) {
                     pstmtItens.setInt(1, pedido.getId());
                     ResultSet rsItens = pstmtItens.executeQuery();

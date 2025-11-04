@@ -32,19 +32,28 @@ public class App extends Application {
     }
 
     private void inicializarDados() {
-        new UsuarioDAO().criarTabela();
-        new ItemCardapioDAO().criarTabela();
-        PedidoDAO pedidoDAO = new PedidoDAO();
-        pedidoDAO.criarTabelas();
+        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        usuarioDAO.criarTabela();
+        ItemCardapioDAO itemCardapioDAO = new ItemCardapioDAO();
+        itemCardapioDAO.criarTabela();
+        IngredienteDAO ingredienteDAO = new IngredienteDAO();
+        ingredienteDAO.criarTabela();
         mesaDAO.criarTabela();
 
-        UsuarioDAO usuarioDAO = new UsuarioDAO();
+        ContaDAO contaDAO = new ContaDAO();
+        contaDAO.criarTabela();
+
+        PedidoDAO pedidoDAO = new PedidoDAO();
+        pedidoDAO.criarTabelas();
+
+        FichaTecnicaDAO fichaTecnicaDAO = new FichaTecnicaDAO();
+        fichaTecnicaDAO.criarTabela();
+
         if (!usuarioDAO.existemUsuarios()) {
             usuarioDAO.adicionarUsuario(new Usuario("Administrador", "admin", "1234", "Gerente"));
         }
 
         listaDeMesas = mesaDAO.carregarTodasAsMesas();
-
         if (listaDeMesas.isEmpty()) {
             System.out.println("Nenhuma mesa encontrada. A criar 12 mesas padrão.");
             for (int i = 1; i <= 12; i++) {
@@ -54,35 +63,34 @@ public class App extends Application {
             }
         }
 
-        System.out.println("A carregar pedidos ativos...");
         List<Pedido> pedidosAtivos = pedidoDAO.carregarPedidosAtivos();
         for (Pedido pedido : pedidosAtivos) {
-            for (Mesa mesa : listaDeMesas) {
-                if (mesa.getNumero() == pedido.getIdMesa()) {
-                    mesa.setPedidoAtual(pedido);
-                    mesa.setStatus(StatusMesa.OCUPADA);
-                    System.out.println("Pedido ID " + pedido.getId() + " associado à Mesa " + mesa.getNumero());
-                }
-            }
+            listaDeMesas.stream()
+                    .filter(mesa -> mesa.getNumero() == pedido.getIdMesa())
+                    .findFirst()
+                    .ifPresent(mesa -> {
+                        mesa.adicionarPedido(pedido);
+                        mesa.setStatus(StatusMesa.OCUPADA);
+                    });
         }
     }
 
     @Override
     public void stop() throws Exception {
         System.out.println("Aplicação a fechar... a salvar estado atual.");
+        PedidoDAO pedidoDAO = new PedidoDAO();
 
-        // Salva o status atual de TODAS as mesas
         for (Mesa mesa : listaDeMesas) {
             mesaDAO.atualizarStatusMesa(mesa);
         }
         System.out.println("Estado das mesas salvo.");
 
-        // Limpa e salva os pedidos que estão realmente ativos
-        PedidoDAO pedidoDAO = new PedidoDAO();
         pedidoDAO.limparPedidosAtivos();
         for (Mesa mesa : listaDeMesas) {
-            if (mesa.getStatus() == StatusMesa.OCUPADA && mesa.getPedidoAtual() != null) {
-                pedidoDAO.salvarPedido(mesa.getPedidoAtual());
+            for(Pedido pedido : mesa.getPedidosAtivos()) {
+                if (pedido.getId() == 0) {
+                    pedidoDAO.salvarPedido(pedido);
+                }
             }
         }
     }

@@ -6,12 +6,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class PagamentoViewController {
 
@@ -27,9 +29,7 @@ public class PagamentoViewController {
     @FXML private TextField campoPixCopiaECola;
     @FXML private Button botaoConfirmarPagamento;
 
-    private Pedido pedido;
-    private PedidoDAO pedidoDAO;
-    private Runnable sucessoCallback;
+    private Consumer<MetodoPagamento> sucessoCallback;
 
     @FXML
     public void initialize() {
@@ -40,60 +40,49 @@ public class PagamentoViewController {
         botaoConfirmarPagamento.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.CHECK));
     }
 
-    public void carregarDados(Pedido pedido, PedidoDAO pedidoDAO, Runnable sucessoCallback) {
-        this.pedido = pedido;
-        this.pedidoDAO = pedidoDAO;
+    public void carregarDados(BigDecimal valorTotal, Consumer<MetodoPagamento> sucessoCallback) {
         this.sucessoCallback = sucessoCallback;
-        labelTotalAPagar.setText(String.format("Total a Pagar: R$ %.2f", pedido.getValorTotal()));
+        labelTotalAPagar.setText(String.format("Total a Pagar: R$ %.2f", valorTotal));
     }
 
     @FXML
     private void mostrarPainelPix() {
         String chavePixExemplo = UUID.randomUUID().toString();
-        Image qrCodeImage = QRCodeUtil.gerarQRCodeImage(chavePixExemplo, 200, 200);
-
-        if (qrCodeImage != null) {
-            imageViewQrCode.setImage(qrCodeImage);
-            campoPixCopiaECola.setText(chavePixExemplo);
-            painelMetodos.setVisible(false);
-            painelMetodos.setManaged(false);
-            painelPix.setVisible(true);
-            painelPix.setManaged(true);
-        } else {
-            AlertaUtil.mostrarErro("Erro de QR Code", "Não foi possível gerar a imagem do QR Code.");
-        }
+        imageViewQrCode.setImage(QRCodeUtil.gerarQRCodeImage(chavePixExemplo, 200, 200));
+        campoPixCopiaECola.setText(chavePixExemplo);
+        painelMetodos.setVisible(false);
+        painelMetodos.setManaged(false);
+        painelPix.setVisible(true);
+        painelPix.setManaged(true);
     }
-
     @FXML
     private void pagamentoPixConfirmado() {
         processarPagamento(MetodoPagamento.PIX);
     }
-    @FXML private void pagarComDinheiro() {
+    @FXML
+    private void pagarComDinheiro() {
         processarPagamento(MetodoPagamento.DINHEIRO);
     }
-    @FXML private void pagarComCredito() {
+    @FXML
+    private void pagarComCredito() {
         processarPagamento(MetodoPagamento.CARTAO_CREDITO);
     }
-    @FXML private void pagarComDebito() {
+    @FXML
+    private void pagarComDebito() {
         processarPagamento(MetodoPagamento.CARTAO_DEBITO);
     }
-
     private void processarPagamento(MetodoPagamento metodo) {
-        if (pedido.getId() == 0) {
-            pedidoDAO.salvarPedido(pedido);
-        }
-        pedidoDAO.marcarComoPago(pedido.getId(), metodo);
-
         if (sucessoCallback != null) {
-            sucessoCallback.run();
+            sucessoCallback.accept(metodo);
         }
-
-        Stage stage = (Stage) botaoCancelar.getScene().getWindow();
-        stage.close();
+        fecharJanela();
     }
-
     @FXML
     private void cancelarPagamento() {
+        fecharJanela();
+    }
+
+    private void fecharJanela() {
         Stage stage = (Stage) botaoCancelar.getScene().getWindow();
         stage.close();
     }

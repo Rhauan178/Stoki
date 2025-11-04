@@ -6,16 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-enum MetodoPagamento {
-    DINHEIRO,
-    CARTAO_CREDITO,
-    CARTAO_DEBITO,
-    PIX
-}
-
 enum StatusPedido {
     ABERTO,
     ENVIADO,
+    EM_PREPARO,
     PRONTO,
     PAGO,
     ARQUIVADO
@@ -30,7 +24,7 @@ public class Pedido {
     private LocalDateTime dataHora;
     private Map<ItemCardapio, Integer> itens;
     private String observacao;
-    private MetodoPagamento metodoPagamento;
+    private Integer idContaPaga;
 
     public Pedido(int id, int idMesa, int idFuncionario) {
         this.id = id;
@@ -40,49 +34,23 @@ public class Pedido {
         this.dataHora = LocalDateTime.now();
         this.itens = new HashMap<>();
         this.observacao = "";
-        this.metodoPagamento = null;
+        this.idContaPaga = null;
     }
 
-    // Getters e Setters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public int getIdMesa() {
-        return idMesa;
-    }
-    public int getIdFuncionario() {
-        return idFuncionario;
-    }
-    public StatusPedido getStatus() {
-        return status;
-    }
-    public void setStatus(StatusPedido status) {
-        this.status = status;
-    }
-    public LocalDateTime getDataHora() {
-        return dataHora;
-    }
-    public void setDataHora(LocalDateTime dataHora) {
-        this.dataHora = dataHora;
-    }
-    public Map<ItemCardapio, Integer> getItens() {
-        return itens;
-    }
-    public String getObservacao() {
-        return observacao;
-    }
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
-    }
-    public MetodoPagamento getMetodoPagamento() {
-        return metodoPagamento;
-    }
-    public void setMetodoPagamento(MetodoPagamento metodoPagamento) {
-        this.metodoPagamento = metodoPagamento;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getIdMesa() { return idMesa; }
+    public int getIdFuncionario() { return idFuncionario; }
+    public StatusPedido getStatus() { return status; }
+    public void setStatus(StatusPedido status) { this.status = status; }
+    public LocalDateTime getDataHora() { return dataHora; }
+    public void setDataHora(LocalDateTime dataHora) { this.dataHora = dataHora; }
+    public Map<ItemCardapio, Integer> getItens() { return itens; }
+    public String getObservacao() { return observacao; }
+    public void setObservacao(String observacao) { this.observacao = observacao; }
+    public Integer getIdContaPaga() { return idContaPaga; }
+    public void setIdContaPaga(Integer idContaPaga) { this.idContaPaga = idContaPaga; }
+
     public void adicionarItem(ItemCardapio item) {
         this.itens.put(item, this.itens.getOrDefault(item, 0) + 1);
     }

@@ -49,6 +49,7 @@
     <bottom>
         <HBox alignment="CENTER" spacing="10.0">
             <children>
+                <Button fx:id="botaoVerConta" onAction="#abrirContaDaMesa" text="Ver Conta" style="-fx-base: #28a745; -fx-text-fill: white; -fx-font-weight: bold;"/>
                 <Button fx:id="botaoAdicionarMesa" onAction="#adicionarMesa" text="Adicionar Mesa" />
                 <Button fx:id="botaoRemoverMesa" onAction="#removerMesa" text="Remover Mesa" styleClass="button-perigo" />
                 <Button fx:id="botaoLogout" onAction="#fazerLogout" text="Logout / Sair" />

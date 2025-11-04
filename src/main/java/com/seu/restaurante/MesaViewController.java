@@ -10,12 +10,12 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.control.Tooltip;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -24,16 +24,17 @@ import java.util.Optional;
 
 public class MesaViewController {
 
+    @FXML private BorderPane painelPrincipal;
     @FXML private GridPane gridMesas;
     @FXML private Button botaoAdicionarMesa;
     @FXML private Button botaoRemoverMesa;
     @FXML private Button botaoLogout;
     @FXML private VBox painelAdmin;
-    @FXML private BorderPane painelPrincipal;
     @FXML private Button botaoGerirCardapio;
     @FXML private Button botaoGerirEstoque;
     @FXML private Button botaoGerirFuncionarios;
     @FXML private Button botaoVerRelatorios;
+    @FXML private Button botaoVerConta;
 
     private List<Mesa> listaDeMesas;
     private Mesa mesaSelecionada = null;
@@ -49,23 +50,32 @@ public class MesaViewController {
         botaoGerirEstoque.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.ARCHIVE));
         botaoGerirFuncionarios.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.USERS));
         botaoVerRelatorios.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.LINE_CHART));
+        botaoVerConta.setGraphic(new FontAwesomeIconView(FontAwesomeIcon.MONEY));
 
         Tooltip.install(botaoAdicionarMesa, new Tooltip("Adicionar uma nova mesa ao salão"));
         Tooltip.install(botaoRemoverMesa, new Tooltip("Remover a mesa selecionada (deve estar livre)"));
         Tooltip.install(botaoLogout, new Tooltip("Sair do sistema e voltar para a tela de login"));
-        Tooltip.install(botaoGerirCardapio, new Tooltip("Abrir o módulo de gerenciamento do cardápio e fichas técnicas"));
-        Tooltip.install(botaoGerirEstoque, new Tooltip("Abrir o módulo de gerenciamento de ingredientes do estoque"));
+        Tooltip.install(botaoVerConta, new Tooltip("Ver/Fechar a conta da mesa selecionada"));
+        Tooltip.install(botaoGerirCardapio, new Tooltip("Abrir o módulo de gerenciamento do cardápio"));
+        Tooltip.install(botaoGerirEstoque, new Tooltip("Abrir o módulo de gerenciamento de estoque"));
         Tooltip.install(botaoGerirFuncionarios, new Tooltip("Abrir o módulo de gerenciamento de funcionários"));
         Tooltip.install(botaoVerRelatorios, new Tooltip("Abrir o módulo de relatórios de vendas"));
 
         this.listaDeMesas = App.getListaDeMesas();
         popularGridDeMesas();
         configurarVisibilidadeAdmin();
+
+        botaoVerConta.setDisable(true);
     }
 
     private void configurarVisibilidadeAdmin() {
         Usuario usuarioLogado = App.getUsuarioLogado();
         boolean isGerente = usuarioLogado != null && "Gerente".equalsIgnoreCase(usuarioLogado.getCargo());
+        boolean isGarcom = usuarioLogado != null && "Garçom".equalsIgnoreCase(usuarioLogado.getCargo());
+
+        boolean podeAtender = isGerente || isGarcom;
+        botaoVerConta.setVisible(podeAtender);
+        botaoVerConta.setManaged(podeAtender);
 
         painelAdmin.setVisible(isGerente);
         painelAdmin.setManaged(isGerente);
@@ -73,7 +83,6 @@ public class MesaViewController {
         botaoAdicionarMesa.setManaged(isGerente);
         botaoRemoverMesa.setVisible(isGerente);
         botaoRemoverMesa.setManaged(isGerente);
-
         botaoRemoverMesa.setDisable(true);
     }
 
@@ -116,20 +125,14 @@ public class MesaViewController {
         botaoMesaSelecionado = botaoClicado;
         botaoMesaSelecionado.getStyleClass().add("mesa-selecionada");
         botaoRemoverMesa.setDisable(false);
+        botaoVerConta.setDisable(mesa.getStatus() == StatusMesa.LIVRE);
     }
 
     private void acaoDuploClique(Mesa mesa, Button botaoMesa) {
-        switch (mesa.getStatus()) {
-            case OCUPADA:
-                abrirJanelaDePedido(mesa);
-                break;
-            case RESERVADA:
-                ocuparMesa(mesa);
-                atualizarEstiloBotao(botaoMesa, mesa);
-                break;
-            case LIVRE:
-                mostrarOpcoesMesaLivre(mesa, botaoMesa);
-                break;
+        if (mesa.getStatus() == StatusMesa.OCUPADA || mesa.getStatus() == StatusMesa.RESERVADA) {
+            abrirJanelaDePedido(mesa);
+        } else {
+            mostrarOpcoesMesaLivre(mesa, botaoMesa);
         }
     }
 
@@ -190,17 +193,6 @@ public class MesaViewController {
 
     private void ocuparMesa(Mesa mesa) {
         mesa.setStatus(StatusMesa.OCUPADA);
-
-        Usuario funcionarioLogado = App.getUsuarioLogado();
-        if (funcionarioLogado == null) {
-            AlertaUtil.mostrarErro("Erro Crítico", "Nenhum funcionário logado. Não é possível abrir um pedido.");
-            return;
-        }
-
-        if (mesa.getPedidoAtual() == null) {
-            Pedido novoPedido = new Pedido(0, mesa.getNumero(), funcionarioLogado.getId());
-            mesa.setPedidoAtual(novoPedido);
-        }
     }
 
     private void atualizarEstiloBotao(Button botao, Mesa mesa) {
@@ -225,44 +217,48 @@ public class MesaViewController {
     }
 
     private void abrirJanelaDePedido(Mesa mesa) {
-        System.out.println("\n[DEBUG] Tentando abrir detalhes para a Mesa: " + mesa.getNumero());
-        if (mesa.getPedidoAtual() == null) {
-            System.out.println("[DEBUG] AVISO: O pedido atual para esta mesa é nulo!");
-        }
-
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/seu/restaurante/PedidoView.fxml"));
             Parent root = loader.load();
             PedidoViewController controller = loader.getController();
 
-            System.out.println("[DEBUG] Controller da janela de detalhes carregado. A enviar dados da mesa...");
-            controller.carregarDadosDaMesa(mesa);
-            controller.setOnCloseCallback(this::popularGridDeMesas);
+            controller.prepararNovoPedido(mesa, App.getUsuarioLogado().getId());
 
             Stage stage = new Stage();
-            stage.setTitle("Detalhes do Pedido");
+            stage.setTitle("Novo Envio para Mesa " + mesa.getNumero());
             Scene scene = new Scene(root);
             scene.getStylesheets().add(App.class.getResource("/com/seu/restaurante/styles.css").toExternalForm());
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
 
+            popularGridDeMesas();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void abrirNovaJanela(String fxml, String titulo) {
+    @FXML
+    private void abrirContaDaMesa() {
+        if (mesaSelecionada == null || mesaSelecionada.getStatus() == StatusMesa.LIVRE) {
+            AlertaUtil.mostrarErro("Erro", "Selecione uma mesa ocupada ou reservada para ver a conta.");
+            return;
+        }
+
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("/com/seu/restaurante/ContaView.fxml"));
             Parent root = loader.load();
+            ContaViewController controller = loader.getController();
+            controller.carregarConta(mesaSelecionada, this::popularGridDeMesas);
+
+            Stage stage = new Stage();
+            stage.setTitle("Conta da Mesa " + mesaSelecionada.getNumero());
             Scene scene = new Scene(root);
             scene.getStylesheets().add(App.class.getResource("/com/seu/restaurante/styles.css").toExternalForm());
-            Stage stage = new Stage();
-            stage.setTitle(titulo);
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
