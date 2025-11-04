@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 public class RelatorioViewController {
 
@@ -30,12 +31,23 @@ public class RelatorioViewController {
     @FXML private DatePicker datePickerInicio;
     @FXML private DatePicker datePickerFim;
     @FXML private ComboBox<Usuario> comboFuncionario;
+    @FXML private Button botaoFiltrar;
+    @FXML private Button botaoLimparFiltro;
+    @FXML private Button botaoArquivar;
+    @FXML private Button botaoAlternarVisao;
 
     private final ContaDAO contaDAO = new ContaDAO();
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
 
+    private boolean mostrandoArquivados = false;
+
     @FXML
     public void initialize() {
+        Tooltip.install(botaoFiltrar, new Tooltip("Aplicar os filtros de data e funcionário"));
+        Tooltip.install(botaoLimparFiltro, new Tooltip("Remover todos os filtros aplicados"));
+        Tooltip.install(botaoArquivar, new Tooltip("Mover as contas pagas atuais para o arquivo"));
+        Tooltip.install(botaoAlternarVisao, new Tooltip("Alternar entre vendas atuais e vendas arquivadas"));
+
         configurarTabela();
         carregarFuncionarios();
         carregarDadosDoRelatorio(null, null, null);
@@ -52,17 +64,16 @@ public class RelatorioViewController {
         colunaMesaId.setCellValueFactory(new PropertyValueFactory<>("idMesa"));
         colunaDataHora.setCellValueFactory(new PropertyValueFactory<>("dataHora"));
         colunaValorTotal.setCellValueFactory(new PropertyValueFactory<>("valorTotal"));
+
         colunaFuncionario.setCellValueFactory(cellData -> {
             Usuario f = usuarioDAO.buscarPorId(cellData.getValue().getIdFuncionario());
             return new SimpleStringProperty(f != null ? f.getNome() : "Desconhecido");
         });
 
-        // Coluna do Método de Pagamento
         colunaMetodoPagamento.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getMetodoPagamento().toString())
         );
 
-        // Formatadores (código existente)
         colunaValorTotal.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(BigDecimal item, boolean empty) {
@@ -81,7 +92,18 @@ public class RelatorioViewController {
     }
 
     private void carregarDadosDoRelatorio(LocalDate dataInicio, LocalDate dataFim, Integer funcionarioId) {
-        List<Conta> contas = contaDAO.carregarContasPagas(dataInicio, dataFim, funcionarioId);
+        List<Conta> contas;
+        if (mostrandoArquivados) {
+            labelTituloRelatorio.setText("Relatório de Vendas Arquivadas");
+            contas = contaDAO.carregarContasArquivadas(dataInicio, dataFim, funcionarioId);
+            botaoAlternarVisao.setText("Ver Vendas Atuais");
+            botaoArquivar.setVisible(false);
+        } else {
+            labelTituloRelatorio.setText("Relatório de Vendas Atuais");
+            contas = contaDAO.carregarContasPagas(dataInicio, dataFim, funcionarioId);
+            botaoAlternarVisao.setText("Ver Vendas Arquivadas");
+            botaoArquivar.setVisible(true);
+        }
 
         tabelaContas.setItems(FXCollections.observableArrayList(contas));
 
@@ -89,7 +111,7 @@ public class RelatorioViewController {
                 .map(Conta::getValorTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        labelTotalPedidos.setText("Total de Contas Pagas: " + contas.size());
+        labelTotalPedidos.setText("Total de Contas: " + contas.size());
         labelFaturamentoTotal.setText(String.format("Faturamento Total: R$ %.2f", faturamentoTotal));
     }
 
@@ -118,5 +140,21 @@ public class RelatorioViewController {
     @FXML
     private void voltarParaMesas() {
         App.trocarDeTela("MesaView.fxml", "Controle de Mesas");
+    }
+
+    @FXML
+    private void arquivarVendas() {
+        boolean confirmado = AlertaUtil.mostrarConfirmacao("Confirmar Arquivamento",
+                "Tem a certeza de que quer arquivar todas as vendas atuais?");
+        if (confirmado) {
+            contaDAO.arquivarContasPagas();
+            carregarDadosDoRelatorio(null, null, null);
+        }
+    }
+
+    @FXML
+    private void alternarVisao() {
+        mostrandoArquivados = !mostrandoArquivados;
+        limparFiltro();
     }
 }

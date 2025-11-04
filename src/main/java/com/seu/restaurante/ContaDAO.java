@@ -17,6 +17,7 @@ public class ContaDAO {
                 + " valor_total DECIMAL(10, 2) NOT NULL,"
                 + " metodo_pagamento TEXT NOT NULL,"
                 + " data_hora TEXT NOT NULL,"
+                + " status TEXT NOT NULL,"
                 + " FOREIGN KEY (id_funcionario) REFERENCES usuarios(id)"
                 + ");";
         try (Connection conn = DatabaseConnector.connect();
@@ -37,6 +38,7 @@ public class ContaDAO {
             pstmt.setBigDecimal(3, conta.getValorTotal());
             pstmt.setString(4, conta.getMetodoPagamento().name());
             pstmt.setString(5, conta.getDataHora().toString());
+            pstmt.setString(6, conta.getStatus().name());
             pstmt.executeUpdate();
 
             ResultSet generatedKeys = pstmt.getGeneratedKeys();
@@ -50,15 +52,32 @@ public class ContaDAO {
         return idGerado;
     }
 
+    public void arquivarContasPagas() {
+        String sql = "UPDATE contas SET status = ? WHERE status = ?";
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, StatusConta.ARQUIVADA.name());
+            pstmt.setString(2, StatusConta.PAGA.name());
+            int affectedRows = pstmt.executeUpdate();
+            System.out.println(affectedRows + " contas foram arquivadas.");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public List<Conta> carregarContasPagas(LocalDate dataInicio, LocalDate dataFim, Integer funcionarioId) {
-        String sql = "SELECT * FROM contas";
+        String sql = "SELECT * FROM contas WHERE status = 'PAGA'";
+        return carregarContas(sql, dataInicio, dataFim, funcionarioId);
+    }
+
+    public List<Conta> carregarContasArquivadas(LocalDate dataInicio, LocalDate dataFim, Integer funcionarioId) {
+        String sql = "SELECT * FROM contas WHERE status = 'ARQUIVADA'";
         return carregarContas(sql, dataInicio, dataFim, funcionarioId);
     }
 
     private List<Conta> carregarContas(String baseSql, LocalDate dataInicio, LocalDate dataFim, Integer funcionarioId) {
         StringBuilder sqlBuilder = new StringBuilder(baseSql);
         List<Object> params = new ArrayList<>();
-        sqlBuilder.append(" WHERE 1=1");
 
         if (dataInicio != null && dataFim != null) {
             sqlBuilder.append(" AND date(data_hora) BETWEEN ? AND ?");
@@ -86,7 +105,8 @@ public class ContaDAO {
                         rs.getInt("id_funcionario"),
                         rs.getBigDecimal("valor_total"),
                         MetodoPagamento.valueOf(rs.getString("metodo_pagamento")),
-                        LocalDateTime.parse(rs.getString("data_hora"))
+                        LocalDateTime.parse(rs.getString("data_hora")),
+                        StatusConta.valueOf(rs.getString("status"))
                 ));
             }
         } catch (SQLException e) {
