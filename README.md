@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/assets/logo-stoki.png" alt="Logo da Stoki" width="200"/>
+  <img src=".github/assets/image.png" alt="Logo da Stoki" width="200"/>
 </p>
 
 <h1 align="center">
