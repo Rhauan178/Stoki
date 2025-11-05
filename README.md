@@ -19,16 +19,15 @@
 
 ## 📋 Índice
 
-* [Sobre o Projeto](#🧐-sobre-o-projeto)
-* [✨ Funcionalidades](#✨-funcionalidades)
-* [📸 Screenshots](#📸-screenshots)
-* [🚀 Tecnologias Usadas](#🚀-tecnologias-usadas)
-* [⭐ Pilares de Qualidade](#⭐-pilares-de-qualidade)
-* [💭 Modelo Conceitual](#💭-modelo-conceitual)
-* [🗃️ Modelo de Dados](#🗃️-modelo-de-dados)
-* [🏁 Começando](#🏁-começando)
-* [🤝 Como Contribuir](#🤝-como-contribuir)
-
+* [Sobre o Projeto](#sobre-o-projeto)
+* [✨ Funcionalidades](#funcionalidades)
+* [📸 Screenshots](#screenshots)
+* [🚀 Tecnologias Usadas](#tecnologias-usadas)
+* [⭐ Pilares de Qualidade](#pilares-de-qualidade)
+* [💭 Modelo Conceitual](#modelo-conceitual)
+* [🗃️ Modelo de Dados](#modelo-de-dados)
+* [🏁 Começando](#começando)
+* [🤝 Como Contribuir](#como-contribuir)
 ---
 
 ## 🧐 Sobre o Projeto
