@@ -80,6 +80,11 @@ Mais do que funcionalidades, garantimos uma base sólida (Requisitos Não Funcio
 * 📈 **Disponibilidade (RNF04):** Alta disponibilidade (99.5% de uptime) para garantir que o sistema funcione durante todo o horário de pico.
 * 🌐 **Compatibilidade (RNF05):** Aplicação do cliente 100% responsiva para os principais navegadores de smartphones.
 
+## Modelo Conceitual
+<p align="center">
+  <img src="teste.png">
+</p>
+
 ## 🗃️ Modelo de Dados
 
 ```mermaid
