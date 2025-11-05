@@ -82,7 +82,7 @@ Mais do que funcionalidades, garantimos uma base sólida (Requisitos Não Funcio
 
 ## Modelo Conceitual
 <p align="center">
-  <img src="teste.png">
+  <img src="Modelo-Conceitual.png">
 </p>
 
 ## 🗃️ Modelo de Dados
