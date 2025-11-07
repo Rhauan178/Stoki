@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/assets/logo-stoki.png" alt="Logo da Stoki" width="200"/>
+  <img src="image.png" alt="Logo da Stoki" width="200"/>
 </p>
 
 <h1 align="center">
@@ -19,15 +19,15 @@
 
 ## 📋 Índice
 
-* [Sobre o Projeto](#-sobre-o-projeto)
-* [✨ Funcionalidades](#-funcionalidades)
-* [📸 Screenshots](#-screenshots)
-* [🚀 Tecnologias Usadas](#-tecnologias-usadas)
-* [⭐ Pilares de Qualidade](#-pilares-de-qualidade)
-* [🗃️ Modelo de Dados](#️-modelo-de-dados)
-* [🏁 Começando](#-começando)
-* [🤝 Como Contribuir](#-como-contribuir)
-
+* [Sobre o Projeto](#sobre-o-projeto)
+* [✨ Funcionalidades](#funcionalidades)
+* [📸 Screenshots](#screenshots)
+* [🚀 Tecnologias Usadas](#tecnologias-usadas)
+* [⭐ Pilares de Qualidade](#pilares-de-qualidade)
+* [💭 Modelo Conceitual](#modelo-conceitual)
+* [🗃️ Modelo de Dados](#modelo-de-dados)
+* [🏁 Começando](#começando)
+* [🤝 Como Contribuir](#como-contribuir)
 ---
 
 ## 🧐 Sobre o Projeto
@@ -79,6 +79,11 @@ Mais do que funcionalidades, garantimos uma base sólida (Requisitos Não Funcio
 * 🔒 **Segurança (RNF03):** Acesso protegido por autenticação e autorização baseada em cargos.
 * 📈 **Disponibilidade (RNF04):** Alta disponibilidade (99.5% de uptime) para garantir que o sistema funcione durante todo o horário de pico.
 * 🌐 **Compatibilidade (RNF05):** Aplicação do cliente 100% responsiva para os principais navegadores de smartphones.
+
+## 💭 Modelo Conceitual
+<p align="center">
+  <img src="Modelo-Conceitual.png">
+</p>
 
 ## 🗃️ Modelo de Dados
 
