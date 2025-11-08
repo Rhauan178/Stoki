@@ -9,10 +9,10 @@ public class ItemCardapioDAO {
     public void criarTabela() {
         String sql = "CREATE TABLE IF NOT EXISTS cardapio ("
                 + " id INT PRIMARY KEY AUTO_INCREMENT,"
-                + " nome text NOT NULL,"
-                + " descricao text,"
+                + " nome VARCHAR(100) NOT NULL,"
+                + " descricao VARCHAR(100),"
                 + " preco DECIMAL(10, 2) NOT NULL,"
-                + " categoria text,"
+                + " categoria VARCHAR(100),"
                 + " disponivel boolean NOT NULL"
                 + ");";
 

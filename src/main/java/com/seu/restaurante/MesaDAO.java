@@ -9,7 +9,7 @@ public class MesaDAO {
     public void criarTabela() {
         String sql = "CREATE TABLE IF NOT EXISTS mesas ("
                 + " numero integer PRIMARY KEY,"
-                + " status text NOT NULL"
+                + " status VARCHAR(100) NOT NULL"
                 + ");";
         try (Connection conn = DatabaseConnector.connect();
              Statement stmt = conn.createStatement()) {

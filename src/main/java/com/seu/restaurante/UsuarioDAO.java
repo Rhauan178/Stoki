@@ -13,10 +13,10 @@ public class UsuarioDAO {
     public void criarTabela() {
         String sql = "CREATE TABLE IF NOT EXISTS usuarios ("
                 + " id INT PRIMARY KEY AUTO_INCREMENT,"
-                + " nome text NOT NULL,"
-                + " login text NOT NULL UNIQUE,"
-                + " senha text NOT NULL,"
-                + " cargo text NOT NULL"
+                + " nome VARCHAR(100)  NOT NULL,"
+                + " login  VARCHAR(100) NOT NULL UNIQUE,"
+                + " senha  VARCHAR(100) NOT NULL,"
+                + " cargo VARCHAR(100) NOT NULL"
                 + ");";
 
         try (Connection conn = DatabaseConnector.connect();

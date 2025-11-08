@@ -14,9 +14,9 @@ public class PedidoDAO {
                 + " id INT PRIMARY KEY AUTO_INCREMENT,"
                 + " id_mesa INT NOT NULL,"
                 + " id_funcionario INT NOT NULL,"
-                + " status TEXT NOT NULL,"
-                + " data_hora TEXT NOT NULL,"
-                + " observacao TEXT,"
+                + " status VARCHAR(100) NOT NULL,"
+                + " data_hora VARCHAR(100) NOT NULL,"
+                + " observacao VARCHAR(100),"
                 + " id_conta_paga INT NULL," // Nova coluna para ligar à conta
                 + " FOREIGN KEY (id_funcionario) REFERENCES usuarios(id),"
                 + " FOREIGN KEY (id_conta_paga) REFERENCES contas(id)"

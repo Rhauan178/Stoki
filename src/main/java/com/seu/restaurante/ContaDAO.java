@@ -15,9 +15,9 @@ public class ContaDAO {
                 + " id_mesa INT NOT NULL,"
                 + " id_funcionario INT NOT NULL,"
                 + " valor_total DECIMAL(10, 2) NOT NULL,"
-                + " metodo_pagamento TEXT NOT NULL,"
-                + " data_hora TEXT NOT NULL,"
-                + " status TEXT NOT NULL,"
+                + " metodo_pagamento VARCHAR(100) NOT NULL,"
+                + " data_hora VARCHAR(100) NOT NULL,"
+                + " status VARCHAR(100) NOT NULL,"
                 + " FOREIGN KEY (id_funcionario) REFERENCES usuarios(id)"
                 + ");";
         try (Connection conn = DatabaseConnector.connect();

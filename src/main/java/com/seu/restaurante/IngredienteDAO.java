@@ -9,9 +9,9 @@ public class IngredienteDAO {
     public void criarTabela() {
         String sql = "CREATE TABLE IF NOT EXISTS ingredientes ("
                 + " id INT PRIMARY KEY AUTO_INCREMENT,"
-                + " nome text NOT NULL UNIQUE,"
+                + " nome VARCHAR(100) NOT NULL UNIQUE,"
                 + " estoque_atual DOUBLE NOT NULL,"
-                + " unidade_medida text NOT NULL,"
+                + " unidade_medida VARCHAR(100) NOT NULL,"
                 + " estoque_minimo DOUBLE NOT NULL"
                 + ");";
         try (Connection conn = DatabaseConnector.connect();
